@@ -27,7 +27,8 @@ class NetEaseMusic {
             name: song.name,
             fileId: song.id,
             pic: song.al.picUrl,
-            singer: song.ar.map(singer => singer.name).join(' ').trim()
+            singer: song.ar.map(singer => singer.name).join(' ').trim(),
+            engine: 'netease'
         }))
         return songs;
     }

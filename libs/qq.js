@@ -25,7 +25,8 @@ class QQMusic {
         const songs = res.data.data.song.list.map(song => ({
             name: song.songname,
             fileId: song.songmid,
-            singer: song.singer.map(singer => singer.name).join(' ').trim()
+            singer: song.singer.map(singer => singer.name).join(' ').trim(),
+            engine: 'qq'
         }))
         return songs
     }

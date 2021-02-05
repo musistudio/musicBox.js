@@ -21,7 +21,8 @@ class KuwoMusic {
             name: song.name,
             fileId: song.rid,
             pic: song.pic,
-            singer: song.artist
+            singer: song.artist,
+            engine: 'kuwo'
         }))
         return songs;
     }
