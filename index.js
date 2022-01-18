@@ -18,7 +18,7 @@ class Music {
     async search(name, singer, engine = 'qq') {
         if (singer) {
             let songs = await this.engines[engine].search(name);
-            songs = songs.filter(song => song.singer.includes(singer));
+            songs = songs.filter(song => typeof song.singer === 'string' ? song.singer === singer : song.singer.includes(singer));
             if (songs.length) {
                 return songs
             } else {
@@ -40,7 +40,7 @@ class Music {
             }
         }
         if (!song.fileId || song.engine !== engine) {
-            const res = await this.search(song.name, engine);
+            const res = await this.search(song.name, song.singer, engine);
             song = res[0]
             song.engine = engine
             console.log(song)
@@ -66,16 +66,9 @@ class Music {
             }
         }
     }
-
-    getMusicLyric() {
-
-    }
 }
 
 const music = new Music()
 music.box({ name: '吹梦到西洲', singer: '恋恋故人难' }).then(res => {
     console.log(res)
 })
-// music.getMusicUrl({ name: '其实，我就在你方圆几里', singer: '陈壹千', fileId: '' }).then(res => {
-//     console.log(res)
-// })

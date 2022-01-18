@@ -14,21 +14,19 @@ class QQMusic {
         }
     }
 
-    async search(keyword, singer, n = 10) {
+    async search(keyword, n = 10) {
         const url = `http://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp?w=${encodeURIComponent(keyword)}&n=${n}&format=json&p=1`
         const res = await axios({
             url,
             method: 'GET',
             headers: this.headers
         })
-        // console.log(res.data.data.song.list[0])
-        const songs = res.data.data.song.list.map(song => ({
+        return res.data.data.song.list.map(song => ({
             name: song.songname,
             fileId: song.songmid,
             singer: song.singer.map(singer => singer.name).join(' ').trim(),
             engine: 'qq'
         }))
-        return songs
     }
 
     async getMusicUrl(fileId) {
@@ -39,8 +37,31 @@ class QQMusic {
             headers: this.headers
         })
         try{
-            const songUrl = /src="http:\/\/[a-zA-Z\d./\?=&]+[\Sautoplay]+/.exec(res.data);
-            return songUrl[0] && songUrl[0].slice(5, -1)
+            let metaData = /window.__ssrFirstPageData__ =[\s\S]*<\/script><script crossorigin="true">window.tj_param/.exec(res.data);
+            metaData = metaData[0] ? JSON.parse(metaData[0].slice(29, -51)) : {};
+            return {
+                url: metaData.songList[0].url,
+                thumbnail: metaData.metaData.image,
+                name: metaData.songList[0].title,
+                singer: metaData.songList[0].singer.map(singer => singer.name).join(' ')
+            }
+        }catch(e) {
+            return e
+        }
+    }
+
+    async getMusicInfo(fileId) {
+        const url = `https://i.y.qq.com/v8/playsong.html?songmid=${fileId}&ADTAG=myqq&from=myqq&channel=10007100`;
+        const res = await axios({
+            url,
+            method: 'GET',
+            headers: this.headers
+        })
+        try{
+            // 
+            let songUrl = /"url":"http:[\s\S]*","bpm/.exec(res.data);
+            songUrl = songUrl[0] ? songUrl[0].slice(7, -6).replace(/\\u002F/g, '/') : '';
+            console.log({songUrl})
         }catch(e) {
             return
         }
